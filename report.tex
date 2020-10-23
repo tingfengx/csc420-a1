@@ -1,0 +1,357 @@
+\documentclass[11pt]{article}
+\usepackage[left=3cm, right=3cm, top=3.2cm, bottom=3.2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage[
+    pdftex, 
+    dvipsnames
+]{xcolor}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=Thistle
+]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{datetime}
+\usepackage{xargs}
+\usepackage{ccicons}
+\usepackage{mdframed}
+\usepackage{caption}
+\usepackage{cancel}
+\usepackage[nottoc]{tocbibind}
+\usepackage[
+    outputdir=.texpadtmp
+]{minted}
+
+% ==== License =====
+\usepackage[
+    type={CC}, 
+    modifier={by-nc-sa}, 
+    version={4.0},
+]{doclicense}
+
+% ==== todo notes ====
+\usepackage[
+    colorinlistoftodos,
+    prependcaption,
+    textsize=tiny
+]{todonotes}
+\newcommandx{\note}[2][1=]{\todo[linecolor=Thistle,backgroundcolor=Thistle!25,bordercolor=Thistle,#1]{#2}}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+
+% General
+\newcommand{\mc}[1]{\mathcal{#1}}
+
+% Math Bold Font, Vector Notations
+\newcommand{\ba}{\mathbf{a}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\bd}{\mathbf{d}}
+\newcommand{\be}{\mathbf{e}}
+\renewcommand{\bf}{\mathbf{f}}
+\newcommand{\bg}{\mathbf{g}}
+\newcommand{\bh}{\mathbf{h}}
+\newcommand{\bi}{\mathbf{i}}
+\newcommand{\bj}{\mathbf{j}}
+\newcommand{\bk}{\mathbf{k}}
+\newcommand{\bl}{\mathbf{l}}
+\newcommand{\bm}{\mathbf{m}}
+\newcommand{\bn}{\mathbf{n}}
+\newcommand{\bo}{\mathbf{o}}
+\newcommand{\bp}{\mathbf{p}}
+\newcommand{\bq}{\mathbf{q}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bz}{\mathbf{z}}
+\newcommand{\bzero}{\mathbf{0}}
+
+% Proofs, Structures
+\newcommand{\proof}{\tit{\underline{Proof:}}} % This equivalent to the \begin{proof}\end{proof} block
+\newcommand{\proofforward}{\tit{\underline{Proof($\implies$):}}}
+\newcommand{\proofback}{\tit{\underline{Proof($\impliedby$):}}}
+\newcommand{\proofsuperset}{\tit{\underline{Proof($\supseteq$):}}}
+\newcommand{\proofsubset}{\tit{\underline{Proof($\subseteq$):}}}
+\newcommand{\contradiction}{$\longrightarrow\!\longleftarrow$}
+\newcommand{\qed}{\hfill $\blacksquare$}
+
+% Number Spaces, Vector Space
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\field}{\mathbb{F}}
+
+% customized commands
+\newcommand{\settag}[1]{\renewcommand{\theenumi}{#1}}
+\newcommand{\tbf}[1]{\textbf{#1}}
+\newcommand{\tit}[1]{\textit{#1}}
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+\newcommand{\double}[1]{\mathbb{#1}} % Set to behave like that on word
+\newcommand{\trans}[3]{$#1:#2\rightarrow{}#3$}
+\newcommand{\map}[3]{\text{$\left[#1\right]_{#2}^{#3}$}}
+\newcommand{\dime}[1]{\mathrm{dim}(#1)}
+\newcommand{\mat}[2]{M_{#1 \times #2}(\R)}
+\newcommand{\aug}{\fboxsep=-\fboxrule\!\!\!\fbox{\strut}\!\!\!}
+\newcommand{\basecase}{\textsc{\underline{Basis Case:}} }
+\newcommand{\inductive}{\textsc{\underline{Inductive Step:}} }
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\independent}{\perp \!\!\! \perp}
+
+\newcommand{\de}[1]{\, \mathrm d #1}
+
+% Set section number in front of equation enumerations
+\counterwithin{equation}{section}
+\counterwithin{footnote}{section}
+\author{Tingfeng Xia (1003780884)}
+\title{\textsc{CSC420 Assignment \#1}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Part I: Theory}
+\subsection{Q1) LTI Systems and Convolution}
+Consider a Linear Time-Invariant system $T$, which for impulse signal 
+\begin{equation}
+	\delta(n)=\left\{\begin{array}{ll}
+		1, & \text { if } n=0 \\
+		0, & \text { else }
+		\end{array}\right.
+\end{equation}
+is such that $T[\delta(n)]=h(n)$. We wish to show that for any input signal $x(n)$, $T[x(n)]=h(n) * x(n)$, i.e. the output is the impulse response convolved with itself. We start with the following
+\begin{equation}
+	(\ddag ) = \sum_t x(t) \delta (n - t)
+\end{equation}
+but since $\delta (n - t) = 0$ precisely when $n = t$, we can rewrite
+\begin{align}
+	(\ddag) 
+	&= \sum_t x(n) \delta(n - t) \\
+	&= x(n) \sum_t \delta(n - t)
+\end{align} 
+but $\delta(n-t)$ only evaluates to 1 once for all possible $t$, which is when $n = t$. So $\sum_t \delta(n-t) = 1$, and thus
+\begin{equation}
+	(\ddag)  = \sum_t x(t) \delta (n - t) = x(n)
+\end{equation}
+Then,
+\begin{align}
+	T[x(n)] = T \left[ \sum_{t} x(t) \delta (n - t) \right] 
+\end{align}
+where we notice that 
+\begin{enumerate}
+	\item summation is a linear operation so we can bring $T$ into the integral, and
+	\item the multiplicand $x(t)$ inside the summation is just a constant real number (evaluated value of $x(\cdot)$ at $t$), and
+	\item the transformation is time invariant meaning that $T[\delta(n) ] = h(n)$ implies $T[\delta(n - t ) ] = h(n - t)$
+\end{enumerate}
+\begin{align}
+	T[x(n)]
+	&= \sum_{t} x(t) T\left[ \delta ( n - t ) \right] \\
+	&= \sum_{t} x(t) h( n - t) \\
+	&= x(n) \ast h(n) = h(n) \ast x(n)
+\end{align}
+where the last step utilizes the commutativity of convolution operation. This concludes the proof. \qed
+
+
+
+\subsection{Q2) Polynomial Multiplication and Convolution}
+Suppose that we have two polynomials
+\begin{equation}
+	f(x) = \sum_{i = 0}^m a_ix_i \quad \text{and} \quad g(x) = \sum_{j = 0}^n b_j x^j
+\end{equation}
+Then, in general we have
+\begin{equation}
+	f(x)g(x) = \sum_{i = 0}^m\sum_{j = 0}^n a_ib_i x^ix^j
+\end{equation}
+we also assume, without loss of generality, that $m \geq n$. We use the change of variable $k = i + j$, then
+\begin{align}
+	f(x) g(x) 
+	&= \sum_{k = 0}^{m + n} \sum_{j = \max \left\{0, k - m \right\} } a_{k - j} b_j x^{k - j} x^{j} \\
+	&= \sum_{k = 0}^{m + n} \underbrace{\left[ \sum_{j = \max \left\{0, k - m \right\} } a_{k - j} b_j \right]}_{\dagger } x^k
+\end{align}
+where we notice that $\dagger$ is exactly the same as the convolution between vector forms of $f(x)$ and $g(x)$, and this concludes the proof. \qed
+
+\subsection{Q3) Laplacian Operator}
+Let $(x, y) \in \real^2$, and we compute the rotated version of $(x, y)$ using the rotation matrix, i.e. 
+\begin{equation}
+	\begin{bmatrix}
+		u \\ v
+	\end{bmatrix} = \begin{bmatrix}
+		\cos \theta & \sin \theta \\
+		- \sin \theta & \cos \theta 
+	\end{bmatrix} \begin{bmatrix}
+		x \\ y
+	\end{bmatrix} = \begin{bmatrix}
+		x\cos \theta + y\sin \theta \\
+		y \cos \theta - x\sin \theta
+	\end{bmatrix}
+\end{equation}
+Our final goal is to show that\note{Notation shorthand used here: $\partial_x f = \frac{\partial f}{\partial x}$ and $\partial_{xy}f = \frac{\partial}{\partial x}\frac{\partial f}{\partial y}$}
+\begin{equation}
+	\partial_{xx} I + \partial_{yy} I = \partial_{uu} I + \partial_{vv} I \label{eq:q13goal}
+\end{equation}
+We first compute $\partial_{x} I$, 
+\begin{align}
+	\partial_x I
+	&= \frac{\partial I}{\partial u} \frac{\partial u}{\partial x}+\frac{\partial I}{\partial v} \frac{\partial v}{\partial x} \\
+	&= \frac{\partial I}{\partial u} \cos \theta - \frac{\partial I}{\partial v} \sin\theta 
+\end{align}
+then, 
+\begin{equation}
+	\partial_{xx} I = \partial_x (\partial_x I) = \underbrace{\frac{\partial}{\partial x} \frac{\partial I}{\partial u}}_{(1)} \cos\theta - \underbrace{ \frac{\partial}{\partial x} \frac{\partial I}{\partial v}}_{(2)} \sin\theta
+\end{equation}
+and due to space limitations, we work on $(1)$ and $(2)$ separately below. Recall that Clairaut's Theorem states that for any second partial derivative $\partial_{xy}f = \partial_{yx} f$, then, 
+\begin{align}
+	(1)
+	&= \partial_{xu}I = \partial_{ux} I = \frac{\partial}{\partial u} \frac{\partial I}{\partial x} \\
+	&= \frac{\partial}{\partial u} \left( \frac{\partial I}{\partial u} \cos \theta - \frac{\partial I}{\partial v} \sin\theta \right)  \\
+	&= \partial_{uu} I \cos\theta - \partial_{uv}I \sin\theta 
+\end{align}
+and 
+\begin{align}
+	(2)
+	&= \partial_{xv}I = \partial_{vx} I = \frac{\partial}{\partial v} \frac{\partial I}{\partial x} \\
+	&= \frac{\partial}{\partial v} \left( \frac{\partial I}{\partial u} \cos\theta - \frac{\partial I}{\partial v} \sin\theta \right) \\
+	&= \partial_{vu}I \cos\theta - \partial_{vv}I \sin\theta
+\end{align}
+Thus
+\begin{equation}
+	\partial_{xx} I = (\partial_{uu} I \cos \theta - \partial_{vu} I \sin\theta ) \cos\theta - (\partial_{vu} I \cos\theta - \partial_{vv}I \sin\theta ) \sin\theta
+\end{equation}
+We do the similar to try to find $\partial_{yy} I$ by starting from $\partial_y I$, 
+\begin{equation}
+	\partial_{y} I=\frac{\partial I}{\partial u} \frac{\partial u}{\partial y}+\frac{\partial I}{\partial v} \frac{\partial v}{\partial y}=\partial_u I \sin \theta+\partial_v I \cos \theta
+\end{equation}
+then, 
+\begin{equation}
+	\partial_{yy} I = \partial_y (\partial_y I)= \underbrace{\frac{\partial}{\partial y} \frac{\partial I}{\partial u}}_{(3)} \sin \theta +\underbrace{\frac{\partial}{\partial y} \frac{\partial I}{\partial v}}_{(4)} \cos \theta
+\end{equation}
+We expand $(3)$ and $(4)$,
+\begin{align}
+	(3) 
+	&= \partial_{yu} I = \partial_{uy} I \\
+	&= \frac{\partial}{\partial u}\left(\frac{\partial I}{\partial u} \sin \theta+\frac{\partial I}{\partial v} \cos \theta\right) \\
+	&= \partial_{uu} I \sin\theta + \partial_{uv} I \cos\theta 
+\end{align}
+and
+\begin{align}
+	(4) 
+	&= \partial_{yv} I = \partial_{ v y }I \\
+	&= \frac{\partial}{\partial u}\left(\frac{\partial I}{\partial u} \sin \theta+\frac{\partial I}{\partial v} \cos \theta\right) \\
+	&= \partial_{vu} I \sin\theta + \partial_{vv} \cos\theta 
+\end{align}
+thus, 
+\begin{equation}
+	\partial_{yy} I = (\partial_{uu} I \sin\theta + \partial_{uv}I \cos\theta ) \sin\theta + (\partial_{uv} I \sin\theta + \partial_{vv} I \cos\theta ) \cos\theta
+\end{equation}
+All together, we have
+\begin{align}
+	\partial_{xx} I + \partial_{yy} I 
+	&= \partial_{uu} I \cos^2 \theta \\
+	&\quad\quad - \partial_{vu} I \sin\theta \cos\theta \\
+	&\quad\quad - \partial_{vu} I \cos\theta \sin\theta \\
+	&\quad\quad + \partial_{vv} I \sin^2 \theta \\
+	&\quad\quad + \partial_{uu} I \sin^2 \theta \\
+	&\quad\quad + \partial_{uv} I \sin\theta \cos\theta \\
+	&\quad\quad + \partial_{uv} I \sin\theta \cos\theta \\
+	&\quad\quad + \partial_{vv} I \cos^2 \theta\\
+	&= \partial_{uu}I \cos^2 \theta + \partial_{vv} I \sin^2 \theta + \partial_{uu} I \sin^2 \theta + \partial_{vv} I \cos^2 \theta \\
+	&= \partial_{uu}I (\sin^2 \theta + \cos^2 \theta) + \partial_{vv} I (\sin^2 \theta + \cos^2 \theta ) \\
+	&= \partial_{uu}I + \partial_{vv}I
+\end{align}
+which is what we wanted to show in Equation \ref{eq:q13goal}, and this concludes the proof. \qed
+
+\section{Part II: Applications}
+\subsection{Q4) Edge Detection}
+\subsubsection{Step I - Gaussian Blurring}
+\begin{figure}[h]
+	\center\includegraphics[width=1.0\textwidth]{figs/q4step1}
+	\caption{Question 4 Step I; Visualizations of Gaussian kernels generated, \textit{\textbf{(left)}} size = $5 \times 5$, $\sigma = 1.6$, and \textit{\textbf{(right)}} size = $11 \times 11, \sigma = 6$\label{fig:q4step1}}
+\end{figure}
+Please check my implementation of \texttt{get\_gaussian\_kernel(size=3, sigma=1.)} inside file \texttt{a1\_code.ipynb} submitted along with this report. Figure \ref{fig:q4step1} is the visualization with appropriate parameters. 
+
+
+\subsubsection{Step II - Gradient Magnitude}
+Please check my implementations inside \texttt{a1\_code.ipynb} submitted along with this report. Below are descriptions of functions written for this question:
+\begin{itemize}
+	\item \texttt{flip\_both\_sides(kernel)} takes in a kernel and flips the kernel along both axis (horizontally and vertically)
+	\item \texttt{pad\_image(image, pad\_sizex, pad\_sizey)} pads the image with zeros around. For $m \times n $ image input, the output is $(m + \texttt{2pad\_sizey}) \times (n + 2\texttt{pad\_sizex})$
+	\item \texttt{handle\_kernel\_even(kernel)} handles kernel to make sure they have odd side lengths. It does so by padding the kernel with zeros at appropriate sides, for example 
+	\begin{equation}
+		\mathcal K = \begin{bmatrix}
+			-1 & 0
+		\end{bmatrix} \quad \text{will be transformed} \quad \implies \quad \mathcal K' = \begin{bmatrix}
+			0 & -1 & 0
+		\end{bmatrix}
+	\end{equation}
+	\item \texttt{conv\_full(image, kernel)} convolves image with kernel. Handles padding with correct size and flipping of kernel before convolution. Using vectorized inner product between matrices to aid speeding up the computation the convolution result. For input image size $(m \times n)$ the output should also be size $(m \times n )$
+	\item \texttt{calc\_grad\_magnitude(image, gx=..., gy=...)} calculates the finite difference derivative of image through convolution with \texttt{gx} and \texttt{gy}. For image size of $(m \times n )$, returns the gradient magnitude matrix of size $(m \times n)$ by convoluting the image with \texttt{gx} and \texttt{gy}. 
+\end{itemize}
+
+\subsubsection{Step III - Threshold Algorithm}
+Please check my implementation of \texttt{auto\_threshold(image\_grad\_mag, eps=0.1)} inside file \texttt{a1\_code.ipynb} submitted along with this report.
+
+\subsubsection{Step IV - Test}
+Please check \texttt{get\_edges(filename=..., kernel=..., thres\_eps=...)} inside file \texttt{a1\_code.ipynb} submitted along with this report. 
+\paragraph{Example Outputs} Feeding the function with images provided and one image of my own choice, produced Figures \ref{fig:q4testimage1}, \ref{fig:q4testimage2}, and \ref{fig:q4testjisoo}. 
+
+\begin{figure}[H]
+	\center\includegraphics[width=\textwidth]{figs/q4testQ4_image_1.jpg}
+	\caption{Question 4 Step IV; \textit{\textbf{(left)}} Gradient strength \texttt{Q4\_image\_1.jpg} through convolution with Sobel filters, and \textbf{\textit{(right)}} thresholded binarized result of gradient strength. \label{fig:q4testimage1}}
+\end{figure}
+\begin{figure}[H]
+	\center\includegraphics[width=\textwidth]{figs/q4testQ4_image_2.jpg}
+	\caption{Question 4 Step IV; \textit{\textbf{(left)}} Gradient strength \texttt{Q4\_image\_2.jpg} through convolution with Sobel filters, and \textbf{\textit{(right)}} thresholded binarized result of gradient strength. \label{fig:q4testimage2}}
+\end{figure}
+\begin{figure}[H]
+	\center\includegraphics[width=\textwidth]{figs/q4testQ4_kim_jisoo.jpeg}
+	\caption{Question 4 Step IV; \textit{\textbf{(left)}} Gradient strength \texttt{Q4\_kim\_jisoo.jpeg} through convolution with Sobel filters, and \textbf{\textit{(right)}} thresholded binarized result of gradient strength. \label{fig:q4testjisoo}}
+\end{figure}
+
+\paragraph{Analysis} 
+\begin{itemize}
+	\item The algorithm was able to neglect gradual changes in image, for  example the sky in the Toronto skyline picture. So this is good.
+%	\item The edges detected in Toronto skyline picture are a bit too thick, and can be improved. 
+	\item In images with wide range of light intensity, the edges in part with low amount of light is not detected. For example in the lake image, the edges on the left most mountain is not detected. I think this is due to the fact that our thresholding algorithm only has one global thresholding value for the image. For images of this type, segmenting image into parts and apply thresholding separately may help. 
+	\item For my choice of image \texttt{Q4\_kim\_jisoo.jpeg}, the edges high lighted seems not too fluid (they are somewhat discrete), and I believe this could be improved using, for example, Hysteresis Thresholding discussed during lecture. 
+\end{itemize}
+
+\subsection{Q5) Connected-Component Labelling}
+Please check my implementation of \texttt{connected\_comp\_lab(image)} inside file \texttt{a1\_code.ipynb} submitted along with this report. The function takes in an image (NumPy array of binarized image), and returns a matrix of the same size as input consisting of label assigned for each pixel. Note that 0 means unlabelled, and corresponds to background. 
+
+\subsection{Q6) Count the Number of Cells} 
+\begin{figure}[H]
+	\center\includegraphics[width=\textwidth]{figs/q6cells}
+	\caption{Question 6 Count the Number of Cells; \textit{\textbf{(top left)}} Original cell image, \textit{\textbf{(top right)}} Grey scale cell image, \textit{\textbf{(bottom left)}} binarized cell image using auto thresholding, and \textit{\textbf{(bottom right)}} colour coded cells - each blob has a different colour and corresponds to a different label \label{fig:cells}. \textbf{The algorithm reports an estimated final result of 32 cells in the image. }}
+\end{figure}
+
+Please check my implementation of \texttt{report\_num\_cells(filename=...)} inside file \texttt{a1\_code.ipynb} submitted along with this report. The function does the following:
+\begin{itemize}
+	\item Read the image as a NumPy array
+	\item convert the colour into grey scale
+	\item threshold the grey scale image into matrix of 0 and 255 only with the \texttt{auto\_threshold} implemented earlier in Question 4) Step IV
+	\item run the Connected Component Labelling algorithm written in Question 5) on the binarized image
+	\item plot the intermediate and final results for visualization and report final count of cells. 
+\end{itemize}
+
+\noindent Figure \ref{fig:cells} shows the visualizations produced. \textbf{The algorithm reports an estimated final result of 32 cells in the image. }
+
+\paragraph{Analysis}
+The estimate result is pretty good. I counted myself and had a result of 36 cells, which is quite close to the result of 32 produced. 
+
+We clearly can see that some cells got connected together during the thresholding, and we want to avoid this. (e.g. the pair at the bottom left corner) The ones that overlap will be harder to deal with but we can at least try to avoid the connection between originally disjunct ones. I think one way to do so is to detect edges first, sine the contrast of back back ground between the cells and the white colour of cell would create a large gradient strength. 
+
+Near bottom to the left, there is an extremely small blob, and it is also recognized as a cell. We should limit that only blobs bigger than a threshold (containing more than ... pixels) to be cells. 
+
+
+
+\end{document}
